@@ -5,6 +5,7 @@ class SpellChecker():
     console_msg_seek_inp = str()
     words = list()
     PUNCTUATIONS = None
+    DICTIONARY = dict()
 
     def __init__(self) -> None:
         self.user_input = None
@@ -15,26 +16,40 @@ class SpellChecker():
             Please enter a text to check for spell errors, or enter phrase 'quit' to exit the program."
             --------------------------------------------------------------------------------------------
         """
-
         self.console_msg_seek_inp = "Enter text to be checked: "
         self.PUNCTUATIONS =  "[\!\(\)\-\[\]\{\}\;\:\'\"\,\<\>\.\/\?\@\#\$\%\^\&\*\_\~\']"
 
-    def normalize_input(self):
+    def remove_duplicates(self, words) -> list():
+        """
+        Remove_duplicates, is primarily used to discard the repeated tokens in stream of words.
+        This is achived by using a map to iterate and store only newly occuring words.
+        """
+
+        temp = dict()
+
+        for word in words:
+            if temp.get(word, None) is None:
+                temp[word] = word
+            else:
+                continue
+
+        return list(temp.keys())
+
+    def normalize_input(self) -> None:
         """
         Normalize_input() method aims normalize user input,
         for proper spell check. This is done in a linear fashion:
         """
         self.user_input = self.user_input.lower() #lowers all the text for case consistency.
         self.user_input = re.sub(self.PUNCTUATIONS, '', self.user_input) #remove all punctuations.
-        print(self.user_input)
         self.words = re.findall("[a-z]+", self.user_input) #capture all words in a list. aka Tokenize.
-        print(self.words)
-
-    def spell_checker(self):
+        self.words = self.remove_duplicates(self.words) #discard duplicate words.
+        
+    def spell_checker(self) -> None:
         print(self.console_msg_welcome)
         while self.user_input != "quit":
             self.user_input = input(self.console_msg_seek_inp)
             self.normalize_input()
         print("Goodbye!")
 obj = SpellChecker()
-obj.console()
+obj.spell_checker()
