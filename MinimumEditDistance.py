@@ -61,7 +61,7 @@ class MinimumEditDistance():
         return self.table[i][j]
 
 
-obj = MinimumEditDistance("Harsha", "Vardhan")
+obj = MinimumEditDistance("rain", "gain")
 print(obj.compute_distance())
 
 
