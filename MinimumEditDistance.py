@@ -34,7 +34,9 @@ class MinimumEditDistance():
                 elif j==0:
                     self.table[i][j] = i
 
-
+    def show_table(self):
+        for row in self.table:
+            print(row, end= "\n")
 
     def compute_distance(self) -> int():
         """
@@ -42,11 +44,25 @@ class MinimumEditDistance():
         or changes that are to be done, inorder to transform first_string into second_string.
         This is done by using the following methods:
         """
-        print(self.table)
+        
+
+        for i in range(1,self.string_one_length+1):
+            for j in range(1,self.string_two_length+1):
+                
+
+                if self.first_string[i-1] == self.second_string[j-1]:
+                    value = self.table[i-1][j-1]
+                else:
+                    value = min(self.table[i-1][j]+1, self.table[i][j-1]+1, self.table[i-1][j-1]+2)
+                self.table[i][j] = value
+                
+            
+        self.show_table()
+        return self.table[i][j]
 
 
 obj = MinimumEditDistance("Harsha", "Vardhan")
-obj.compute_distance()
+print(obj.compute_distance())
 
 
 
