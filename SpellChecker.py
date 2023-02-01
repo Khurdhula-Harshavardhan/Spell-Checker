@@ -19,6 +19,23 @@ class SpellChecker():
         """
         self.console_msg_seek_inp = "Enter text to be checked: "
         self.PUNCTUATIONS =  "[\!\(\)\-\[\]\{\}\;\:\'\"\,\<\>\.\/\?\@\#\$\%\^\&\*\_\~\']"
+        self.build_dictionary()
+
+    def build_dictionary(self) -> None:
+        """
+        This method is called by the constructor to build the dictionary that shall contain
+        all the words, these words are collected from dictionary.txt
+        """
+        try:
+            file_handler = open(os.getcwd() + "/dictionary.txt","r", encoding= "UTF-8")
+            words = file_handler.readlines()
+
+            for word in words:
+                word  = re.sub("\n", "", word)
+                self.DICTIONARY[word] = word
+        except Exception as e:
+            print(e)
+
 
     def remove_duplicates(self, words) -> list():
         """
