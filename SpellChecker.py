@@ -7,6 +7,7 @@ class SpellChecker():
     words = list()
     PUNCTUATIONS = None
     DICTIONARY = dict()
+    errors = None
 
     def __init__(self) -> None:
         self.user_input = None
@@ -20,6 +21,7 @@ class SpellChecker():
         self.console_msg_seek_inp = "Enter text to be checked: "
         self.PUNCTUATIONS =  "[\!\(\)\-\[\]\{\}\;\:\'\"\,\<\>\.\/\?\@\#\$\%\^\&\*\_\~\']"
         self.build_dictionary()
+        self.errors = list()
 
     def build_dictionary(self) -> None:
         """
@@ -68,12 +70,41 @@ class SpellChecker():
             self.words = self.remove_duplicates(self.words) #discard duplicate words.
         except Exception as e:
             print("The following error occured while trying to Normalize user input: " + str(e))
+    
+    def check_for_errors(self) -> bool:
+        """
+        check_for_errors, determines if the text given as input from the user has any
+        token that is not present in our Dictionary.
+        Note: in this scenario, any word that is not part of our vocabulary can be called as an mispelt word / error.
+        it returns True if the user input contains an error, false otherwise.
+        """
+        try:
+            for word in self.words:
+                if self.DICTIONARY.get(word, None) is None:
+                    self.errors.append(word)
+                    return True
+                else:
+                    continue
+
+            return False
+        
+        except Exception as e:
+            print("The following error occured while trying to check user input for errors: " + str(e))
         
     def spell_checker(self) -> None:
         print(self.console_msg_welcome)
         while self.user_input != "quit":
             self.user_input = input(self.console_msg_seek_inp)
-            self.normalize_input()
+            self.normalize_input() #normalizes the input text, and tokenizes it.
+            has_errors = self.check_for_errors() #checks for words that are not in DICTIONARY.
+
+            if has_errors is True:
+                print("User input has errors: ")
+                print(self.errors)
+                self.make_suggestions()
+            else:
+                print("No misspellings detected!")
         print("Goodbye!")
+
 obj = SpellChecker()
 obj.spell_checker()
