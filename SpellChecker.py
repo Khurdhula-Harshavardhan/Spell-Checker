@@ -25,26 +25,32 @@ class SpellChecker():
         Remove_duplicates, is primarily used to discard the repeated tokens in stream of words.
         This is achived by using a map to iterate and store only newly occuring words.
         """
+        try:
+            temp = dict()
 
-        temp = dict()
+            for word in words:
+                if temp.get(word, None) is None:
+                    temp[word] = word
+                else:
+                    continue
 
-        for word in words:
-            if temp.get(word, None) is None:
-                temp[word] = word
-            else:
-                continue
+            return list(temp.keys())
 
-        return list(temp.keys())
+        except Exception as e:
+            print("The following error occured while trying to remove duplicates from user input: " + str(e))
 
     def normalize_input(self) -> None:
         """
         Normalize_input() method aims normalize user input,
         for proper spell check. This is done in a linear fashion:
         """
-        self.user_input = self.user_input.lower() #lowers all the text for case consistency.
-        self.user_input = re.sub(self.PUNCTUATIONS, '', self.user_input) #remove all punctuations.
-        self.words = re.findall("[a-z]+", self.user_input) #capture all words in a list. aka Tokenize.
-        self.words = self.remove_duplicates(self.words) #discard duplicate words.
+        try:
+            self.user_input = self.user_input.lower() #lowers all the text for case consistency.
+            self.user_input = re.sub(self.PUNCTUATIONS, '', self.user_input) #remove all punctuations.
+            self.words = re.findall("[a-z]+", self.user_input) #capture all words in a list. aka Tokenize.
+            self.words = self.remove_duplicates(self.words) #discard duplicate words.
+        except Exception as e:
+            print("The following error occured while trying to Normalize user input: " + str(e))
         
     def spell_checker(self) -> None:
         print(self.console_msg_welcome)
