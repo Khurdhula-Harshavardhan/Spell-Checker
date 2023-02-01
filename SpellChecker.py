@@ -1,4 +1,5 @@
 import re
+import os
 class SpellChecker():
     user_input = str()
     console_msg_welcome = str()

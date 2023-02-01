@@ -17,24 +17,31 @@ class MinimumEditDistance():
         This constructor sets up all the attributes of the class, that are used through out to computer the
         minimum edit distance.
         """
-        self.string_one_length = len(first_string)
-        self.string_two_length = len(second_string)
-        self.first_string = first_string
-        self.second_string = second_string
+        try:
+            self.string_one_length = len(first_string)
+            self.string_two_length = len(second_string)
+            self.first_string = first_string
+            self.second_string = second_string
 
-        #creates a two dimensional list for storing the table values. 
-        self.table = [[0 for i in range(self.string_two_length + 1)] for j in range(self.string_one_length + 1)]
+            #creates a two dimensional list for storing the table values. 
+            self.table = [[0 for i in range(self.string_two_length + 1)] for j in range(self.string_one_length + 1)]
 
-        #creates a skeleton table, with values that are initialized for further processing.
-        for i in range(self.string_one_length+1):
-            for j in range(self.string_two_length+1):
+            #creates a skeleton table, with values that are initialized for further processing.
+            for i in range(self.string_one_length+1):
+                for j in range(self.string_two_length+1):
 
-                if i == 0:
-                    self.table[i][j] = j
-                elif j==0:
-                    self.table[i][j] = i
+                    if i == 0:
+                        self.table[i][j] = j
+                    elif j==0:
+                        self.table[i][j] = i
+        except Exception as e:
+            print("The following error occured while setting up attributes for MED: "+str(e))
+
 
     def show_table(self):
+        """
+        This method is used to just print the table, for debugging.
+        """
         for row in self.table:
             print(row, end= "\n")
 
@@ -45,20 +52,23 @@ class MinimumEditDistance():
         This is done by using the following methods:
         """
         
-
-        for i in range(1,self.string_one_length+1):
-            for j in range(1,self.string_two_length+1):
+        try: 
+            for i in range(1,self.string_one_length+1):
+                for j in range(1,self.string_two_length+1):
                 
 
-                if self.first_string[i-1] == self.second_string[j-1]:
-                    value = self.table[i-1][j-1]
-                else:
-                    value = min(self.table[i-1][j]+1, self.table[i][j-1]+1, self.table[i-1][j-1]+2)
-                self.table[i][j] = value
+                    if self.first_string[i-1] == self.second_string[j-1]:
+                        value = self.table[i-1][j-1]
+                    else:
+                        value = min(self.table[i-1][j]+1, self.table[i][j-1]+1, self.table[i-1][j-1]+2)
+                    self.table[i][j] = value
                 
             
-        self.show_table()
-        return self.table[i][j]
+            self.show_table()
+            return self.table[i][j]
+
+        except Exception as e:
+            print("The following error occured while trying to compute Minimum Edit Distance: " + str(e))
 
 
 obj = MinimumEditDistance("rain", "gain")
