@@ -64,15 +64,13 @@ class MinimumEditDistance():
                     self.table[i][j] = value
                 
             
-            self.show_table()
+            #self.show_table()
             return self.table[i][j]
 
         except Exception as e:
             print("The following error occured while trying to compute Minimum Edit Distance: " + str(e))
 
 
-obj = MinimumEditDistance("rain", "gain")
-print(obj.compute_distance())
 
 
 

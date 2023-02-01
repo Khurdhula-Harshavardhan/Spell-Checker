@@ -1,5 +1,7 @@
 import re
 import os
+from MinimumEditDistance import MinimumEditDistance
+
 class SpellChecker():
     user_input = str()
     console_msg_welcome = str()
@@ -8,6 +10,7 @@ class SpellChecker():
     PUNCTUATIONS = None
     DICTIONARY = dict()
     errors = None
+    med = None
 
     def __init__(self) -> None:
         self.user_input = None
@@ -22,6 +25,7 @@ class SpellChecker():
         self.PUNCTUATIONS =  "[\!\(\)\-\[\]\{\}\;\:\'\"\,\<\>\.\/\?\@\#\$\%\^\&\*\_\~\']"
         self.build_dictionary()
         self.errors = list()
+        
 
     def build_dictionary(self) -> None:
         """
@@ -52,8 +56,8 @@ class SpellChecker():
                     temp[word] = word
                 else:
                     continue
-
-            return list(temp.keys())
+            
+            return [ x for x in temp.values() ]
 
         except Exception as e:
             print("The following error occured while trying to remove duplicates from user input: " + str(e))
@@ -68,6 +72,7 @@ class SpellChecker():
             self.user_input = re.sub(self.PUNCTUATIONS, '', self.user_input) #remove all punctuations.
             self.words = re.findall("[a-z]+", self.user_input) #capture all words in a list. aka Tokenize.
             self.words = self.remove_duplicates(self.words) #discard duplicate words.
+            print(self.words)
         except Exception as e:
             print("The following error occured while trying to Normalize user input: " + str(e))
     
@@ -79,17 +84,40 @@ class SpellChecker():
         it returns True if the user input contains an error, false otherwise.
         """
         try:
+            has_errors = False
             for word in self.words:
                 if self.DICTIONARY.get(word, None) is None:
+                    has_errors = True
                     self.errors.append(word)
-                    return True
                 else:
-                    continue
-
-            return False
+                    continue           
+            return has_errors
         
         except Exception as e:
             print("The following error occured while trying to check user input for errors: " + str(e))
+
+    def make_suggestions(self) -> None:
+        """
+        make_suggestions aims to build a list of suggested words that are misspelt or unavailable in our Dictionary.
+        This is achieved by using MinimumEditDictance algorithm.
+        """
+
+        try:
+            for word in self.errors:
+                for possible_correction in self.DICTIONARY.keys():
+                    
+                    if len(word) == 1:
+                        print("i", "a")
+                    elif possible_correction.startswith(word[0]):
+                        temporary_object = MinimumEditDistance(word, possible_correction)
+                        cost = temporary_object.compute_distance()
+                        
+                        if cost<= (len(word)/2):
+                            print(word, possible_correction, str(cost))
+
+            
+        except Exception as e:
+            print(e)
         
     def spell_checker(self) -> None:
         print(self.console_msg_welcome)
