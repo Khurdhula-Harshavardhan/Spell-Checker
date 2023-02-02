@@ -168,5 +168,3 @@ class SpellChecker():
                 print("No misspellings detected!")
         print("Goodbye!")
 
-obj = SpellChecker()
-obj.spell_checker()
