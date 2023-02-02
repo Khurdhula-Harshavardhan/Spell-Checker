@@ -11,6 +11,8 @@ class SpellChecker():
     DICTIONARY = dict()
     errors = None
     med = None
+    Sugesstions = None
+    garbage_strings = list()
 
     def __init__(self) -> None:
         self.user_input = None
@@ -21,11 +23,11 @@ class SpellChecker():
             Please enter a text to check for spell errors, or enter phrase 'quit' to exit the program."
             --------------------------------------------------------------------------------------------
         """
-        self.console_msg_seek_inp = "Enter text to be checked: "
+        self.console_msg_seek_inp = """----------------------------\nEnter text to be checked: """
         self.PUNCTUATIONS =  "[\!\(\)\-\[\]\{\}\;\:\'\"\,\<\>\.\/\?\@\#\$\%\^\&\*\_\~\']"
         self.build_dictionary()
         self.errors = list()
-        
+        self.Sugesstions = dict()
 
     def build_dictionary(self) -> None:
         """
@@ -72,7 +74,7 @@ class SpellChecker():
             self.user_input = re.sub(self.PUNCTUATIONS, '', self.user_input) #remove all punctuations.
             self.words = re.findall("[a-z]+", self.user_input) #capture all words in a list. aka Tokenize.
             self.words = self.remove_duplicates(self.words) #discard duplicate words.
-            print(self.words)
+            
         except Exception as e:
             print("The following error occured while trying to Normalize user input: " + str(e))
     
@@ -84,17 +86,28 @@ class SpellChecker():
         it returns True if the user input contains an error, false otherwise.
         """
         try:
+            
             has_errors = False
             for word in self.words:
                 if self.DICTIONARY.get(word, None) is None:
                     has_errors = True
                     self.errors.append(word)
+                    self.Sugesstions[word] = list()
                 else:
                     continue           
             return has_errors
         
         except Exception as e:
             print("The following error occured while trying to check user input for errors: " + str(e))
+
+    def reset_suggestions(self) -> None:
+        """
+        Suggestions might contain corrections from previously entered text, which has to be discarded for current input.
+        """
+        try:
+            self.Sugesstions.clear()
+        except Exception as e:
+            print(str(e))
 
     def make_suggestions(self) -> None:
         """
@@ -105,30 +118,51 @@ class SpellChecker():
         try:
             for word in self.errors:
                 for possible_correction in self.DICTIONARY.keys():
-                    
                     if len(word) == 1:
-                        print("i", "a")
+                        self.Sugesstions[word] = ['i', 'a']
                     elif possible_correction.startswith(word[0]):
                         temporary_object = MinimumEditDistance(word, possible_correction)
                         cost = temporary_object.compute_distance()
                         
-                        if cost<= (len(word)/2):
-                            print(word, possible_correction, str(cost))
-
+                        if cost<= (len(word)/1.5):
+                            #print(word, possible_correction, str(cost))
+                            if self.Sugesstions.get(word, None) is None:
+                                print(word)
+                                raise TypeError("Suggestions failed to store the possible corrections.")
+                            else:
+                                self.Sugesstions[word].append(possible_correction)
             
+            self.garbage_strings.clear()
+            print("""\nMisspelling - Suggestion(s)
+--------------------------------""")
+            #print(self.Sugesstions)
+            for word in self.errors:
+                suggestions = ", ".join(self.Sugesstions.get(word))
+                if len(suggestions.strip()) == 0:
+                    self.garbage_strings.append(word)
+                else:
+                    print("\n" + word + " - " + suggestions)
+            if len(self.garbage_strings) != 0:
+                print("Garbage strings, that were identified within total session: " + ", ".join(self.garbage_strings))
+
         except Exception as e:
             print(e)
         
     def spell_checker(self) -> None:
+        """
+        The main method, that begins the execution of the SpellChecker's main functionalities.
+        """
+
         print(self.console_msg_welcome)
+
         while self.user_input != "quit":
             self.user_input = input(self.console_msg_seek_inp)
             self.normalize_input() #normalizes the input text, and tokenizes it.
+            self.Sugesstions.clear() #clears previous suggestions stored.
+            self.errors.clear() #clears previous errors that were identified.
             has_errors = self.check_for_errors() #checks for words that are not in DICTIONARY.
 
-            if has_errors is True:
-                print("User input has errors: ")
-                print(self.errors)
+            if has_errors is True: #check if user input has any input that has errors.
                 self.make_suggestions()
             else:
                 print("No misspellings detected!")
